@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Force Challenge · Holiday Physics</title>
+<style>
+:root{
+  --red:#c8102e;--red-d:#9b0a22;--green:#0b6b4a;--green-d:#06402c;--green-dd:#042b1e;
+  --gold:#f6c445;--gold-d:#c99a1a;--cream:#fffaf0;--ink:#12261f;--silver:#d9e2e8;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Inter","Segoe UI","Helvetica Neue",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  color:var(--cream);min-height:100vh;touch-action:manipulation;
+  background:
+    radial-gradient(1100px 650px at 15% -10%,#12805a 0%,transparent 60%),
+    radial-gradient(900px 600px at 100% 0,#7d0b1f 0%,transparent 55%),
+    linear-gradient(160deg,#06402c,#042b1e);
+  background-attachment:fixed;
+}
+#snow{position:fixed;inset:0;pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:14px 14px 40px}
+.top{display:flex;align-items:center;justify-content:space-between;padding:10px 6px 16px}
+.logo{font-weight:800;font-size:clamp(20px,4vw,30px);letter-spacing:-.02em}
+.logo span{color:var(--gold)}
+.logo small{display:block;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#bfe3d3;margin-top:2px}
+.tools{display:flex;gap:8px}
+button{font:inherit;cursor:pointer;border:0;color:inherit}
+.icon{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:10px 14px;font-size:16px;color:#fff;transition:.15s}
+.icon:hover{background:rgba(255,255,255,.22)}
+.icon.small{font-size:13px;padding:7px 12px;background:var(--green);border-color:var(--green-d);border-radius:999px;color:#fff}
+
+.card{background:var(--cream);color:var(--ink);border-radius:24px;padding:24px;border:3px solid var(--gold);box-shadow:0 20px 50px rgba(0,0,0,.4);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;right:0;top:0;height:10px;background:repeating-linear-gradient(45deg,var(--red) 0 14px,#fff 14px 28px)}
+.card>*:first-child{margin-top:8px}
+h1{font-size:clamp(26px,5vw,40px);letter-spacing:-.03em;line-height:1.1;color:var(--red-d)}
+h2{font-size:clamp(18px,3vw,24px);letter-spacing:-.02em;color:var(--green-d)}
+.lead{margin:10px 0 18px;color:#3b5249;line-height:1.55}
+label.l{display:block;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--green-d);margin:16px 0 8px}
+input[type=text]{width:100%;font:inherit;font-size:18px;padding:14px 16px;border-radius:14px;border:2px solid #c9d8d0;background:#fff;color:var(--ink);outline:none;transition:.15s}
+input[type=text]:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(200,16,46,.15)}
+.chips{display:flex;gap:10px;flex-wrap:wrap}
+.chip{flex:1 1 130px;text-align:center;padding:14px 12px;border-radius:14px;border:2px solid #c9d8d0;background:#fff;font-weight:700;color:var(--green-d);cursor:pointer;user-select:none;transition:.15s}
+.chip:hover{border-color:var(--green)}
+.chip.on{background:var(--green);color:#fff;border-color:var(--green-d);box-shadow:0 6px 16px rgba(11,107,74,.35);transform:translateY(-1px)}
+.grade{display:inline-block;background:var(--gold);color:#4a3200;padding:8px 16px;border-radius:999px;font-weight:800}
+.btn{font-weight:800;font-size:17px;padding:15px 26px;border-radius:14px;transition:.15s;letter-spacing:.01em}
+.btn.red{background:linear-gradient(180deg,#e0213f,var(--red-d));color:#fff;box-shadow:0 6px 0 #6d0616}
+.btn.green{background:linear-gradient(180deg,#14916a,var(--green-d));color:#fff;box-shadow:0 6px 0 #03281c}
+.btn.gold{background:linear-gradient(180deg,#ffd868,var(--gold-d));color:#4a3200;box-shadow:0 6px 0 #8a6a10}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.4)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.rules{margin-top:20px;background:#f2f7f4;border-radius:16px;padding:16px 18px;font-size:14px;line-height:1.7;color:#2c443a}
+.rules b{color:var(--red-d)}
+
+.studentbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;font-weight:600}
+.scorepill{background:var(--gold);color:#4a3200;padding:8px 16px;border-radius:999px;font-weight:700}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.step{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:10px;text-align:center;font-weight:700;font-size:14px;opacity:.75}
+.step small{display:block;font-weight:600;font-size:12px;opacity:.85}
+.step.on{background:var(--red);border-color:var(--gold);opacity:1;box-shadow:0 0 0 3px rgba(246,196,69,.35)}
+.step.done{background:var(--green);opacity:1}
+.qhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 10px}
+.tag{background:var(--red);color:#fff;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:999px}
+#qnum{font-weight:700;color:#5a7268;font-size:14px;margin-right:auto}
+.bar{height:10px;background:#e5eee9;border-radius:999px;overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;width:0;background:repeating-linear-gradient(45deg,var(--red) 0 10px,#fff 10px 20px);transition:width .35s}
+.qtext{font-size:clamp(16px,2.4vw,19px);line-height:1.55;margin:8px 0 16px;font-weight:500}
+.qgrid{display:grid;grid-template-columns:1.15fr 1fr;gap:20px;align-items:start}
+@media(max-width:760px){.qgrid{grid-template-columns:1fr}}
+.diagram{background:linear-gradient(180deg,#e6f2fb 0%,#f8fcff 100%);border:2px solid #cfe1ee;border-radius:18px;padding:6px}
+.diagram svg{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:13px;font-weight:600;color:#3b5249}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.answer label{font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--green-d)}
+.ansrow{display:flex;align-items:center;gap:10px;margin:8px 0 12px}
+.ansrow input{font-size:26px;font-weight:700;text-align:right}
+.unit{font-size:22px;font-weight:800;color:var(--red-d)}
+.pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.pad button{background:#fff;border:2px solid #c9d8d0;border-radius:14px;padding:0;min-height:54px;font-size:22px;font-weight:700;color:var(--green-d);box-shadow:0 4px 0 #c9d8d0;transition:.1s}
+.pad button:active{transform:translateY(3px);box-shadow:0 1px 0 #c9d8d0;background:#eaf5ef}
+.pad button.op{background:var(--green);color:#fff;border-color:var(--green-d);box-shadow:0 4px 0 var(--green-d)}
+.pad button.del{background:var(--red);color:#fff;border-color:var(--red-d);box-shadow:0 4px 0 var(--red-d)}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.actions .btn{flex:1}
+.fb{margin-top:14px;padding:14px 16px;border-radius:14px;line-height:1.6;font-size:15px}
+.fb.ok{background:#e3f6ec;border:2px solid #34a56f;color:#0b4a31}
+.fb.no{background:#fde8ea;border:2px solid #e0485c;color:#7a0d1d}
+.fb .ex{margin-top:6px;font-size:14px;opacity:.95}
+.hint{margin-top:18px;background:#f2f7f4;border-radius:14px;padding:12px 16px;font-size:14px;color:#2c443a}
+.hint summary{cursor:pointer;font-weight:700;color:var(--green-d)}
+.hint ul{margin:10px 0 0 20px;line-height:1.7}
+.shake{animation:shake .35s}
+@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.quit{margin-top:16px;text-align:center}
+.quit button{background:none;color:#bfe3d3;text-decoration:underline;font-size:14px}
+
+.modal{position:fixed;inset:0;background:rgba(2,20,14,.78);display:flex;align-items:center;justify-content:center;z-index:10;padding:16px;backdrop-filter:blur(4px)}
+.modal[hidden]{display:none}
+.modal .card{max-width:560px;width:100%;text-align:center;max-height:94vh;overflow:auto;animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.badges{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin:14px 0}
+.badge{text-align:center;font-size:13px;font-weight:700;color:var(--green-d)}
+.badge svg{filter:drop-shadow(0 8px 12px rgba(0,0,0,.3))}
+.badge button{margin-top:6px;background:var(--green);color:#fff;border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700}
+.locked{width:150px;height:180px;border-radius:20px;border:3px dashed #b8c9c0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#7d9188;font-weight:700;gap:6px;padding:10px;text-align:center;font-size:13px}
+.locked b{font-size:42px}
+.pop h2{margin-bottom:6px}
+table.sc{width:100%;border-collapse:collapse;margin:14px 0;font-size:16px}
+table.sc th,table.sc td{padding:10px 12px;border-bottom:1px solid #dbe6e0;text-align:left}
+table.sc th{color:var(--green-d);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+table.sc td:last-child,table.sc th:last-child{text-align:right;font-weight:800}
+table.sc tr.tot td{border-bottom:0;background:#fff3cf;font-size:19px}
+.who{display:flex;flex-wrap:wrap;gap:8px 18px;color:#3b5249;font-weight:600;margin:8px 0}
+.who b{color:var(--ink)}
+.banner{font-size:18px;font-weight:700;margin:10px 0;color:var(--red-d)}
+.resbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.resbtns .btn{flex:1 1 180px}
+@media print{
+  #snow,.top,.resbtns,.badge button,.quit{display:none!important}
+  body{background:#fff;color:#000}
+  .card{box-shadow:none}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="snow" aria-hidden="true"></canvas>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">❄ Force <span>Challenge</span><small>Holiday Physics Activity</small></div>
+    <div class="tools"><button id="muteBtn" class="icon" aria-label="Turn sound off" title="Sound on/off">🔊</button></div>
+  </header>
+
+  <main>
+    <!-- WELCOME -->
+    <section id="welcome" class="card">
+      <h1>Ready for the holiday force challenge? 🎁</h1>
+      <p class="lead">Solve force problems, collect a badge for every part you finish, and earn the golden Master badge with a perfect score.</p>
+
+      <label class="l" for="nameInput">Student name</label>
+      <input id="nameInput" type="text" maxlength="40" autocomplete="name" placeholder="Type your full name">
+
+      <label class="l">Grade</label>
+      <span class="grade">Grade 10</span>
+
+      <label class="l">Section</label>
+      <div class="chips" id="sectionChips" role="radiogroup" aria-label="Section">
+        <div class="chip" role="radio" tabindex="0" aria-checked="false" data-v="Kings">Kings</div>
+        <div class="chip" role="radio" tabindex="0" aria-checked="false" data-v="Chronicles">Chronicles</div>
+        <div class="chip" role="radio" tabindex="0" aria-checked="false" data-v="Ezra">Ezra</div>
+      </div>
+
+      <div class="rules">
+        <b>How it works</b><br>
+        • Part 1: Applied force, friction, weight, normal force (10 pts)<br>
+        • Part 2: Net force on the x‑axis (10 pts)<br>
+        • Part 3: Net force on the y‑axis (10 pts)<br>
+        • Score <b>25 / 30 or higher</b> to pass the challenge and earn the Challenge Passed badge.<br>
+        • Each question is worth 1 point and has one attempt. Use <b>g = 9.8 m/s²</b>.<br>
+        • Answer in newtons (N). Round to 2 decimal places if needed.<br>
+        • Use the keyboard, mouse, pen, or touch keypad. Press <b>Enter</b> to check.
+      </div>
+
+      <div style="margin-top:22px"><button id="startBtn" class="btn red" disabled>Start the challenge ▶</button></div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz" hidden>
+      <div class="studentbar"><span id="sInfo"></span><span class="scorepill">Score <b id="sScore">0</b> / 30</span></div>
+      <div class="steps" id="steps"></div>
+      <div class="card">
+        <div class="qhead">
+          <span id="tag" class="tag"></span>
+          <span id="qnum"></span>
+          <button id="speakBtn" class="icon small" type="button">🔊 Read aloud</button>
+        </div>
+        <div class="bar"><i id="bar"></i></div>
+        <h2 id="partTitle"></h2>
+        <p id="qtext" class="qtext"></p>
+        <div class="qgrid">
+          <div>
+            <div id="diagram" class="diagram"></div>
+            <div id="legend" class="legend"></div>
+          </div>
+          <div class="answer">
+            <label for="ans">Your answer</label>
+            <div class="ansrow"><input id="ans" type="text" inputmode="none" autocomplete="off" enterkeyhint="done" placeholder="0" aria-label="Answer in newtons"><span class="unit">N</span></div>
+            <div id="pad" class="pad"></div>
+            <div class="actions">
+              <button id="checkBtn" class="btn red" type="button">Check answer</button>
+              <button id="nextBtn" class="btn green" type="button" hidden>Next ▶</button>
+            </div>
+            <div id="fb" class="fb" hidden></div>
+          </div>
+        </div>
+        <details class="hint"><summary>Formula hints</summary><ul id="hintList"></ul></details>
+      </div>
+      <div class="quit"><button id="quitBtn" type="button">Quit to start screen</button></div>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="results" class="card" hidden>
+      <h1>Challenge complete! 🎄</h1>
+      <div class="who" id="who"></div>
+      <div class="banner" id="banner"></div>
+      <table class="sc" id="scoreTable"></table>
+      <h2>Your badges</h2>
+      <div class="badges" id="badgeRow"></div>
+      <div class="resbtns">
+        <button class="btn gold" id="printBtn" type="button">🖨 Print results</button>
+        <button class="btn green" id="againBtn" type="button">↻ Try new questions</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="modal" class="modal" hidden role="dialog" aria-modal="true">
+  <div class="card pop">
+    <h2 id="mTitle"></h2>
+    <p id="mText" class="lead"></p>
+    <div id="mBadges" class="badges"></div>
+    <button id="mBtn" class="btn red" type="button"></button>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const G=9.8;
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[rnd(0,a.length-1)];
+const rd=x=>Math.round(x*100)/100;
+const fmt=x=>String(rd(x));
+const sgn=x=>{const r=rd(x);return (r>0?'+':'')+String(r).replace('-','\u2212')};
+
+/* ---------- Snow ---------- */
+(function(){
+  const c=$('#snow'),x=c.getContext('2d');let W,H;const fl=[];
+  function rs(){W=c.width=innerWidth;H=c.height=innerHeight}
+  addEventListener('resize',rs);rs();
+  for(let i=0;i<90;i++)fl.push({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,s:.3+Math.random()*1.1,d:Math.random()*6.28});
+  function tick(){
+    x.clearRect(0,0,W,H);x.fillStyle='rgba(255,255,255,.8)';
+    fl.forEach(f=>{f.y+=f.s;f.d+=.01;f.x+=Math.sin(f.d)*.5;if(f.y>H+5){f.y=-5;f.x=Math.random()*W}
+      x.beginPath();x.arc(f.x,f.y,f.r,0,7);x.fill()});
+    requestAnimationFrame(tick);
+  }
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches)tick();
+})();
+
+/* ---------- Sound ---------- */
+let audioCtx,soundOn=true;
+function tone(freq,dur,type,vol,delay){
+  if(!soundOn)return;
+  try{
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    const t=audioCtx.currentTime+(delay||0),o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type=type||'sine';o.frequency.value=freq;
+    g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(vol||.15,t+.01);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(g);g.connect(audioCtx.destination);o.start(t);o.stop(t+dur+.05);
+  }catch(e){}
+}
+const sfx={
+  click:()=>tone(660,.07,'triangle',.07),
+  ok:()=>{tone(784,.15,'sine',.15);tone(988,.22,'sine',.15,.1)},
+  bad:()=>{tone(220,.25,'sawtooth',.07);tone(165,.32,'sawtooth',.07,.12)},
+  badge:()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,.3,'triangle',.14,i*.12)),
+  master:()=>[523,659,784,1047,784,1047,1319,1568,2093].forEach((f,i)=>tone(f,.32,'triangle',.14,i*.13))
+};
+$('#muteBtn').addEventListener('click',()=>{
+  soundOn=!soundOn;
+  $('#muteBtn').textContent=soundOn?'🔊':'🔇';
+  $('#muteBtn').setAttribute('aria-label',soundOn?'Turn sound off':'Turn sound on');
+  if(!soundOn&&window.speechSynthesis)speechSynthesis.cancel();
+  else sfx.click();
+});
+function speak(t){
+  if(!soundOn||!window.speechSynthesis)return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t.replace(/ΣFx/g,'net force on the x axis').replace(/ΣFy/g,'net force on the y axis').replace(/m\/s²/g,'meters per second squared').replace(/\bkg\b/g,'kilograms').replace(/ N\b/g,' newtons').replace(/μ/g,'mu'));
+  u.rate=.95;speechSynthesis.speak(u);
+}
+
+/* ---------- Diagram ---------- */
+const KC={applied:'#d62839',friction:'#d98e04',weight:'#15803d',normal:'#2b6cb0',tension:'#c2410c',air:'#0e7490',push:'#9d174d',unknown:'#7c3aed'};
+const KN={applied:'Applied force',friction:'Friction',weight:'Weight',normal:'Normal force',tension:'Tension',air:'Air resistance',push:'Opposing push',unknown:'Force to find'};
+function arrowSVG(a,len,B){
+  const col=KC[a.kind],off=a.off||0;
+  let x1,y1,dx=0,dy=0;
+  if(a.dir==='right'){x1=B.R;y1=B.cy+off;dx=1}
+  else if(a.dir==='left'){x1=B.L;y1=B.cy+off;dx=-1}
+  else if(a.dir==='up'){x1=B.cx+off;y1=B.T;dy=-1}
+  else{x1=B.cx+off;y1=B.B;dy=1}
+  const tx=x1+dx*len,ty=y1+dy*len,px=-dy,py=dx;
+  const bx=tx-dx*12,by=ty-dy*12;
+  let s=`<line x1="${x1}" y1="${y1}" x2="${bx}" y2="${by}" stroke="${col}" stroke-width="6" stroke-linecap="round"/>`;
+  s+=`<polygon points="${tx},${ty} ${bx+px*9},${by+py*9} ${bx-px*9},${by-py*9}" fill="${col}"/>`;
+  let lx,ly,anc;
+  if(dx!==0){lx=tx+dx*10;ly=ty+5;anc=dx>0?'start':'end'}
+  else{lx=x1+(off<0?-12:12);ly=y1+dy*len/2+5;anc=off<0?'end':'start'}
+  s+=`<text x="${lx}" y="${ly}" text-anchor="${anc}" font-size="14" font-weight="800" fill="${col}" paint-order="stroke" stroke="#f8fcff" stroke-width="4">${a.label}</text>`;
+  return s;
+}
+function diagram(boxLabel,arrows){
+  const cx=210,bw=90,bh=60,by=100,B={L:cx-bw/2,R:cx+bw/2,T:by,B:by+bh,cx:cx,cy:by+bh/2};
+  const mxH=Math.max(1,...arrows.filter(a=>a.dir==='left'||a.dir==='right').map(a=>a.val||0));
+  const mxV=Math.max(1,...arrows.filter(a=>a.dir==='up'||a.dir==='down').map(a=>a.val||0));
+  let s=`<svg viewBox="0 0 420 270" role="img" aria-label="Force diagram of a gift box">`;
+  s+=`<rect x="10" y="${B.B}" width="400" height="16" rx="8" fill="#ffffff" stroke="#b9d3e4" stroke-width="2"/>`;
+  s+=`<rect x="10" y="${B.B+16}" width="400" height="90" fill="#eaf4fb" opacity=".0"/>`;
+  s+=`<rect x="${B.L}" y="${B.T}" width="${bw}" height="${bh}" rx="6" fill="#c8102e" stroke="#7d0b1f" stroke-width="3"/>`;
+  s+=`<rect x="${cx-7}" y="${B.T}" width="14" height="${bh}" fill="#f6c445"/>`;
+  s+=`<rect x="${B.L}" y="${B.cy-6}" width="${bw}" height="12" fill="#f6c445" opacity=".0"/>`;
+  s+=`<rect x="${cx-30}" y="${B.cy-12}" width="60" height="24" rx="12" fill="#fffaf0"/>`;
+  s+=`<text x="${cx}" y="${B.cy+5}" text-anchor="middle" font-size="14" font-weight="800" fill="#12261f">${boxLabel}</text>`;
+  arrows.forEach(a=>{
+    let len;
+    if(a.kind==='unknown')len=62;
+    else if(a.dir==='left'||a.dir==='right')len=28+42*((a.val||0)/mxH);
+    else len=30+48*((a.val||0)/mxV);
+    s+=arrowSVG(a,len,B);
+  });
+  s+=`</svg>`;
+  const kinds=[...new Set(arrows.map(a=>a.kind))];
+  const legend=kinds.map(k=>`<span><i style="background:${KC[k]}"></i>${KN[k]}</span>`).join('');
+  return {svg:s,legend:legend};
+}
+
+/* ---------- Question generators ---------- */
+const MASS=[2,3,4,5,6,8,10,12,15,20];
+function Q(tag,text,boxLabel,arrows,answer,expl){
+  const d=diagram(boxLabel,arrows);
+  return {tag,text,svg:d.svg,legend:d.legend,answer:rd(answer),expl};
+}
+function genP1(){
+  const o=[];
+  // Applied force
+  {const m=pick(MASS),a=rnd(1,6);
+   o.push(Q('Applied force',`A ${m} kg toy cart on a frictionless track speeds up at ${a} m/s². What applied force acts on it?`,`${m} kg`,[{dir:'right',kind:'unknown',label:'F = ? N'}],m*a,`F = m × a = ${m} × ${a} = <b>${fmt(m*a)} N</b>`));}
+  {const m=pick([4,5,6,8,10,12]),a=rnd(2,5);
+   o.push(Q('Applied force',`A ${m} kg sled glides on smooth ice and accelerates at ${a} m/s². Find the applied force pulling it. (No friction.)`,`${m} kg`,[{dir:'right',kind:'unknown',label:'F = ? N'}],m*a,`F = m × a = ${m} × ${a} = <b>${fmt(m*a)} N</b>`));}
+  {const m=pick([5,10,15,20]),mu=pick([.1,.2,.3,.4,.5]);const f=mu*m*G;
+   o.push(Q('Applied force',`A ${m} kg crate is pushed across a level floor at constant velocity. The coefficient of kinetic friction is μ = ${mu}. What applied force is needed?`,`${m} kg`,[{dir:'right',kind:'unknown',label:'F = ? N'},{dir:'left',kind:'friction',val:f,label:'f',off:0}].slice(0,1),f,`Constant velocity → net force is zero, so F = f.<br>F = μ × m × g = ${mu} × ${m} × 9.8 = <b>${fmt(f)} N</b>`));}
+  // Friction
+  {const m=pick(MASS),mu=pick([.1,.2,.25,.3,.4,.5]);const f=mu*m*G;
+   o.push(Q('Friction force',`A ${m} kg box slides on a level floor. The coefficient of kinetic friction is μ = ${mu}. Find the friction force.`,`${m} kg`,[{dir:'left',kind:'unknown',label:'f = ? N'}],f,`N = m × g = ${m} × 9.8 = ${fmt(m*G)} N<br>f = μ × N = ${mu} × ${fmt(m*G)} = <b>${fmt(f)} N</b>`));}
+  {const N=pick([40,50,60,80,100,120,150]),mu=pick([.1,.2,.3,.4,.5]);const f=mu*N;
+   o.push(Q('Friction force',`The normal force on a block is ${N} N and the coefficient of friction is μ = ${mu}. What is the friction force?`,'block',[{dir:'up',kind:'normal',val:N,label:`N = ${N} N`},{dir:'left',kind:'unknown',label:'f = ? N'}],f,`f = μ × N = ${mu} × ${N} = <b>${fmt(f)} N</b>`));}
+  // Weight
+  {const m=pick(MASS);
+   o.push(Q('Weight',`What is the weight of a ${m} kg object near Earth's surface?`,`${m} kg`,[{dir:'down',kind:'unknown',label:'W = ? N'}],m*G,`W = m × g = ${m} × 9.8 = <b>${fmt(m*G)} N</b>`));}
+  {const m=rnd(40,70);
+   o.push(Q('Weight',`A student has a mass of ${m} kg. Find the student's weight.`,`${m} kg`,[{dir:'down',kind:'unknown',label:'W = ? N'}],m*G,`W = m × g = ${m} × 9.8 = <b>${fmt(m*G)} N</b>`));}
+  {const g=pick([200,500,800,1500,2500]),m=g/1000;
+   o.push(Q('Weight',`An apple has a mass of ${g} g. What is its weight? (Convert to kg first.)`,`${g} g`,[{dir:'down',kind:'unknown',label:'W = ? N'}],m*G,`${g} g = ${fmt(m)} kg<br>W = m × g = ${fmt(m)} × 9.8 = <b>${fmt(m*G)} N</b>`));}
+  // Normal force
+  {const m=pick([2,3,4,5,6,8,10,12]);
+   o.push(Q('Normal force',`A ${m} kg book rests on a level table. What is the normal force on the book?`,`${m} kg`,[{dir:'up',kind:'unknown',label:'N = ? N'}],m*G,`No vertical acceleration, so N = W = m × g<br>N = ${m} × 9.8 = <b>${fmt(m*G)} N</b>`));}
+  {const m=pick([5,6,8,10,15,20]),F=rnd(2,9)*5;
+   o.push(Q('Normal force',`A ${m} kg crate sits on a level floor and is pushed sideways with ${F} N (it does not leave the floor). Find the normal force.`,`${m} kg`,[{dir:'right',kind:'applied',val:F,label:`F = ${F} N`},{dir:'up',kind:'unknown',label:'N = ? N'}],m*G,`A sideways push does not change the vertical forces, so N = W<br>N = ${m} × 9.8 = <b>${fmt(m*G)} N</b>`));}
+  return o;
+}
+function genP2(){
+  const seq=[0,0,1,3,2,1,3,4,2,0],o=[];
+  const SIGN=' Take right as positive (+) and left as negative (−). Find the net force on the x‑axis.';
+  seq.forEach(t=>{
+    const m=pick([5,6,8,10,12,15,20]),W=rd(m*G);
+    const vert=[{dir:'down',kind:'weight',val:W,label:`W = ${fmt(W)} N`,off:0},{dir:'up',kind:'normal',val:W,label:`N = ${fmt(W)} N`,off:0}];
+    let text,arr,net,expl;
+    if(t===0){
+      const F=rnd(6,20)*5,f=rnd(1,5)*5;net=F-f;
+      text=`A ${m} kg crate is pushed to the right with an applied force of ${F} N. Friction of ${f} N acts to the left.`;
+      arr=[{dir:'right',kind:'applied',val:F,label:`F = ${F} N`},{dir:'left',kind:'friction',val:f,label:`f = ${f} N`}];
+      expl=`ΣFx = F − f = ${F} − ${f} = <b>${sgn(net)} N</b> (to the ${net>=0?'right':'left'})`;
+    }else if(t===1){
+      const F1=rnd(3,10)*5,F2=rnd(3,10)*5,f=rnd(1,5)*5;net=F1+F2-f;
+      text=`Two students push a ${m} kg crate to the right with ${F1} N and ${F2} N. Friction of ${f} N acts to the left.`;
+      arr=[{dir:'right',kind:'applied',val:F1,label:`F₁ = ${F1} N`,off:-14},{dir:'right',kind:'applied',val:F2,label:`F₂ = ${F2} N`,off:14},{dir:'left',kind:'friction',val:f,label:`f = ${f} N`}];
+      expl=`ΣFx = F₁ + F₂ − f = ${F1} + ${F2} − ${f} = <b>${sgn(net)} N</b>`;
+    }else if(t===2){
+      const F=rnd(8,20)*5,P=rnd(2,8)*5,f=rnd(1,5)*5;net=F-P-f;
+      text=`A ${m} kg crate is pushed right with ${F} N. A second person pushes it left with ${P} N, and friction of ${f} N also acts to the left.`;
+      arr=[{dir:'right',kind:'applied',val:F,label:`F = ${F} N`},{dir:'left',kind:'push',val:P,label:`P = ${P} N`,off:-14},{dir:'left',kind:'friction',val:f,label:`f = ${f} N`,off:14}];
+      expl=`ΣFx = F − P − f = ${F} − ${P} − ${f} = <b>${sgn(net)} N</b>`;
+    }else if(t===3){
+      const F=rnd(6,16)*5,f=rnd(1,5)*5;net=f-F;
+      text=`A ${m} kg crate is pushed to the left with ${F} N. Friction of ${f} N acts to the right.`;
+      arr=[{dir:'left',kind:'applied',val:F,label:`F = ${F} N`},{dir:'right',kind:'friction',val:f,label:`f = ${f} N`}];
+      expl=`Left is negative: ΣFx = f − F = ${f} − ${F} = <b>${sgn(net)} N</b> (to the ${net>=0?'right':'left'})`;
+    }else{
+      const F=rnd(4,14)*5;net=0;
+      text=`A ${m} kg crate slides to the right at constant velocity under a push of ${F} N. Friction of ${F} N acts to the left.`;
+      arr=[{dir:'right',kind:'applied',val:F,label:`F = ${F} N`},{dir:'left',kind:'friction',val:F,label:`f = ${F} N`}];
+      expl=`ΣFx = F − f = ${F} − ${F} = <b>0 N</b> (balanced forces → constant velocity)`;
+    }
+    o.push(Q('Net force · x‑axis',text+SIGN,`${m} kg`,arr.concat(vert),net,expl));
+  });
+  return o;
+}
+function genP3(){
+  const seq=[0,2,3,1,4,5,2,3,5,4],o=[];
+  const SIGN=' Take up as positive (+) and down as negative (−). Use g = 9.8 m/s². Find the net force on the y‑axis.';
+  seq.forEach(t=>{
+    const m=pick([2,3,4,5,6,8,10,12]),W=rd(m*G),Wd={dir:'down',kind:'weight',val:W,label:'W = mg'};
+    const pre=`W = m × g = ${m} × 9.8 = ${fmt(W)} N<br>`;
+    let text,arr,net,expl;
+    if(t===0){
+      net=0;
+      text=`A ${m} kg box rests on a table. The table pushes up on the box with a normal force of ${fmt(W)} N.`;
+      arr=[Wd,{dir:'up',kind:'normal',val:W,label:`N = ${fmt(W)} N`}];
+      expl=pre+`ΣFy = N − W = ${fmt(W)} − ${fmt(W)} = <b>0 N</b>`;
+    }else if(t===1){
+      const T=rnd(5,Math.floor(W*.6)),N=rd(W-T);net=0;
+      text=`A ${m} kg box rests on the floor while a rope pulls it upward with T = ${T} N. The floor pushes up with N = ${fmt(N)} N.`;
+      arr=[Wd,{dir:'up',kind:'normal',val:N,label:`N = ${fmt(N)} N`,off:-22},{dir:'up',kind:'tension',val:T,label:`T = ${T} N`,off:22}];
+      expl=pre+`ΣFy = N + T − W = ${fmt(N)} + ${T} − ${fmt(W)} = <b>0 N</b>`;
+    }else if(t===2){
+      const T=Math.ceil(W)+rnd(5,30);net=T-W;
+      text=`A crane lifts a ${m} kg crate upward with a tension of ${T} N.`;
+      arr=[Wd,{dir:'up',kind:'tension',val:T,label:`T = ${T} N`}];
+      expl=pre+`ΣFy = T − W = ${T} − ${fmt(W)} = <b>${sgn(net)} N</b> (upward)`;
+    }else if(t===3){
+      const R=Math.floor(W*rnd(30,80)/100);net=R-W;
+      text=`A ${m} kg object falls through the air. Air resistance of ${R} N acts upward.`;
+      arr=[Wd,{dir:'up',kind:'air',val:R,label:`R = ${R} N`}];
+      expl=pre+`ΣFy = R − W = ${R} − ${fmt(W)} = <b>${sgn(net)} N</b> (downward)`;
+    }else if(t===4){
+      const P=rnd(2,12)*5,N=rd(W+P);net=0;
+      text=`A ${m} kg box rests on the floor while a student presses straight down on it with P = ${P} N. The floor pushes up with N = ${fmt(N)} N.`;
+      arr=[Wd,{dir:'down',kind:'push',val:P,label:`P = ${P} N`,off:22},{dir:'up',kind:'normal',val:N,label:`N = ${fmt(N)} N`}];
+      arr[0].off=-22;
+      expl=pre+`ΣFy = N − W − P = ${fmt(N)} − ${fmt(W)} − ${P} = <b>0 N</b>`;
+    }else{
+      const T=Math.floor(W*rnd(40,85)/100);net=T-W;
+      text=`A ${m} kg bucket is being lowered by a rope. The rope pulls up with T = ${T} N.`;
+      arr=[Wd,{dir:'up',kind:'tension',val:T,label:`T = ${T} N`}];
+      expl=pre+`ΣFy = T − W = ${T} − ${fmt(W)} = <b>${sgn(net)} N</b> (downward)`;
+    }
+    o.push(Q('Net force · y‑axis',text+SIGN,`${m} kg`,arr,net,expl));
+  });
+  return o;
+}
+
+/* ---------- Data ---------- */
+const PARTS=[
+ {title:'Part 1 · Find the force',hint:['Weight: W = m × g (g = 9.8 m/s²)','Normal force on level ground with no vertical push/pull: N = W','Friction: f = μ × N','Applied force: F = m × a (no friction) · constant velocity → F = f']},
+ {title:'Part 2 · Net force on the x‑axis',hint:['ΣFx = (forces to the right) − (forces to the left)','Right is +, left is −. The answer can be negative.','Weight and normal force act on the y‑axis, so they do not count here.']},
+ {title:'Part 3 · Net force on the y‑axis',hint:['ΣFy = (forces up) − (forces down)','Up is +, down is −. The answer can be negative.','Weight: W = m × g (g = 9.8 m/s²)']}
+];
+const BADGES=[
+ {title:'Force Finder',emoji:'🎁',c1:'#c8102e',c2:'#7d0b1f',sub:'Part 1 · Forces'},
+ {title:'Horizontal Hero',emoji:'🦌',c1:'#0b6b4a',c2:'#06402c',sub:'Part 2 · Net force x'},
+ {title:'Vertical Victor',emoji:'🎄',c1:'#c8102e',c2:'#0b6b4a',sub:'Part 3 · Net force y'},
+ {title:'Force Master',emoji:'👑',c1:'#ffd868',c2:'#c99a1a',sub:'Perfect 30 / 30'},
+ {title:'Challenge Passed',emoji:'🏅',c1:'#0b6b4a',c2:'#c8102e',sub:'Passed · 25 / 30 or higher'}
+];
+const PASS=25;
+const S={name:'',section:'',part:0,q:0,qs:[],scores:[0,0,0],badges:[false,false,false],locked:false};
+const cur=()=>S.qs[S.part][S.q];
+const total=()=>S.scores[0]+S.scores[1]+S.scores[2];
+
+function badgeSVG(i,uid,w){
+  const b=BADGES[i],h=Math.round(w*290/240),dark=i===3,tc=dark?'#4a3200':'#fff';
+  const score=i<3?`${S.scores[i]}/10`:i===4?`${total()}/30`:'30/30';
+  const nm=(S.name||'Student').slice(0,26).replace(/[<>&"]/g,'');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 290" width="${w}" height="${h}" role="img" aria-label="${b.title} badge">
+<defs><linearGradient id="bg${uid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${b.c1}"/><stop offset="1" stop-color="${b.c2}"/></linearGradient>
+<linearGradient id="rg${uid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe38a"/><stop offset="1" stop-color="#c99a1a"/></linearGradient></defs>
+<circle cx="120" cy="110" r="94" fill="url(#rg${uid})"/>
+<circle cx="120" cy="110" r="82" fill="url(#bg${uid})"/>
+<circle cx="120" cy="110" r="72" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-dasharray="3 6"/>
+<text x="120" y="56" text-anchor="middle" font-size="15" fill="${dark?'#7a5600':'#ffe38a'}" font-family="Segoe UI,Arial,sans-serif">★ ★ ★</text>
+<text x="120" y="130" text-anchor="middle" font-size="60" font-family="Segoe UI Emoji,Apple Color Emoji,Noto Color Emoji,sans-serif">${b.emoji}</text>
+<text x="120" y="170" text-anchor="middle" font-size="22" font-weight="800" fill="${tc}" font-family="Segoe UI,Arial,sans-serif">${score}</text>
+<rect x="16" y="212" width="208" height="74" rx="14" fill="#fffaf0" stroke="#f6c445" stroke-width="3"/>
+<text x="120" y="236" text-anchor="middle" font-size="18" font-weight="800" fill="#9b0a22" font-family="Segoe UI,Arial,sans-serif">${b.title}</text>
+<text x="120" y="250" text-anchor="middle" font-size="11" font-weight="600" fill="#0b6b4a" font-family="Segoe UI,Arial,sans-serif">${b.sub}</text>
+<text x="120" y="265" text-anchor="middle" font-size="12" font-weight="700" fill="#12261f" font-family="Segoe UI,Arial,sans-serif">${nm}</text>
+<text x="120" y="279" text-anchor="middle" font-size="10" font-weight="600" fill="#5a7268" font-family="Segoe UI,Arial,sans-serif">Grade 10 · ${S.section}</text>
+</svg>`;
+}
+function downloadBadge(i){
+  const svg=badgeSVG(i,'dl'+i,480),img=new Image();
+  img.onload=()=>{
+    const c=document.createElement('canvas');c.width=480;c.height=Math.round(480*290/240);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`${BADGES[i].title.replace(/\s+/g,'-')}-${S.name.replace(/\s+/g,'_')}.png`;document.body.appendChild(a);a.click();a.remove()});
+  };
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+
+/* ---------- Screens ---------- */
+function show(id){['welcome','quiz','results'].forEach(s=>$('#'+s).hidden=(s!==id));window.scrollTo({top:0})}
+
+// welcome
+let chosenSection='';
+function validate(){$('#startBtn').disabled=!($('#nameInput').value.trim().length>=2&&chosenSection)}
+$('#nameInput').addEventListener('input',validate);
+document.querySelectorAll('#sectionChips .chip').forEach(c=>{
+  const sel=()=>{
+    chosenSection=c.dataset.v;
+    document.querySelectorAll('#sectionChips .chip').forEach(x=>{x.classList.toggle('on',x===c);x.setAttribute('aria-checked',x===c)});
+    sfx.click();validate();
+  };
+  c.addEventListener('click',sel);
+  c.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();e.stopPropagation();sel()}});
+});
+$('#startBtn').addEventListener('click',()=>{
+  S.name=$('#nameInput').value.trim();S.section=chosenSection;
+  sfx.click();startAll();
+});
+function startAll(){
+  S.qs=[genP1(),genP2(),genP3()];S.scores=[0,0,0];S.badges=[false,false,false];
+  $('#sInfo').textContent=`${S.name} · Grade 10 · ${S.section}`;
+  show('quiz');startPart(0);
+}
+function startPart(p){
+  S.part=p;S.q=0;renderSteps();renderQ();
+}
+function renderSteps(){
+  $('#steps').innerHTML=PARTS.map((p,i)=>`<div class="step ${i===S.part?'on':''} ${S.badges[i]?'done':''}">${S.badges[i]?'✓ ':''}Part ${i+1}<small>${S.scores[i]} / 10</small></div>`).join('');
+  $('#sScore').textContent=total();
+}
+function renderQ(){
+  const q=cur(),p=PARTS[S.part];
+  S.locked=false;
+  $('#partTitle').textContent=p.title;
+  $('#tag').textContent=q.tag;
+  $('#qnum').textContent=`Question ${S.q+1} of 10`;
+  $('#bar').style.width=(S.q/10*100)+'%';
+  $('#qtext').textContent=q.text;
+  $('#diagram').innerHTML=q.svg;
+  $('#legend').innerHTML=q.legend;
+  $('#hintList').innerHTML=p.hint.map(h=>`<li>${h}</li>`).join('');
+  const a=$('#ans');a.value='';a.disabled=false;
+  $('#fb').hidden=true;$('#fb').className='fb';
+  $('#checkBtn').hidden=false;$('#nextBtn').hidden=true;
+  a.focus({preventScroll:true});
+}
+
+// keypad
+(function(){
+  const keys=['7','8','9','⌫','4','5','6','±','1','2','3','.','0','C','Check'];
+  const pad=$('#pad');
+  keys.forEach(k=>{
+    const b=document.createElement('button');b.type='button';b.textContent=k==='Check'?'✔':k;
+    if(k==='⌫'||k==='C')b.className='del';
+    if(k==='±'||k==='.'||k==='Check')b.className='op';
+    b.setAttribute('aria-label',{'⌫':'Backspace','±':'Toggle plus minus','C':'Clear','Check':'Check answer','.':'Decimal point'}[k]||k);
+    b.addEventListener('mousedown',e=>e.preventDefault());
+    b.addEventListener('click',()=>pressKey(k));
+    pad.appendChild(b);
+  });
+})();
+function pressKey(k){
+  if(S.locked){if(k==='Check')$('#nextBtn').click();return}
+  const a=$('#ans');sfx.click();
+  if(k==='⌫')a.value=a.value.slice(0,-1);
+  else if(k==='C')a.value='';
+  else if(k==='±')a.value=a.value.startsWith('-')?a.value.slice(1):'-'+a.value;
+  else if(k==='.'){if(!a.value.includes('.'))a.value+=(a.value===''||a.value==='-')?'0.':'.'}
+  else if(k==='Check')check();
+  else if(a.value.length<10)a.value+=k;
+}
+$('#ans').addEventListener('input',e=>{
+  e.target.value=e.target.value.replace(/[−–]/g,'-').replace(/,/g,'.').replace(/[^0-9.+\-]/g,'');
+});
+
+function check(){
+  if(S.locked)return;
+  const q=cur(),a=$('#ans');
+  const raw=a.value.trim().replace(/[−–]/g,'-').replace(/,/g,'.').replace(/^\+/,'');
+  if(!/^-?(\d+\.?\d*|\.\d+)$/.test(raw)){
+    a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake');sfx.bad();a.focus();return;
+  }
+  const v=parseFloat(raw),ok=Math.abs(v-q.answer)<=.05; // answers have at most 2 decimals; 2-dp (and 1-dp) rounding both accepted
+  S.locked=true;a.disabled=true;
+  if(ok)S.scores[S.part]++;
+  renderSteps();
+  const ansTxt=S.part===0?`${fmt(q.answer)} N`:`${sgn(q.answer)} N`;
+  const fb=$('#fb');fb.hidden=false;fb.className='fb '+(ok?'ok':'no');
+  fb.innerHTML=`<b>${ok?'✅ Correct! +1 point':'❌ Not quite.'}</b><div>Correct answer: <strong>${ansTxt}</strong></div><div class="ex">${q.expl}</div>`;
+  ok?sfx.ok():sfx.bad();
+  $('#bar').style.width=((S.q+1)/10*100)+'%';
+  $('#checkBtn').hidden=true;
+  const nb=$('#nextBtn');nb.hidden=false;nb.textContent=S.q<9?'Next question ▶':'Finish Part '+(S.part+1)+' 🏅';
+  nb.focus({preventScroll:true});
+}
+function next(){
+  sfx.click();
+  if(S.q<9){S.q++;renderQ()}else completePart();
+}
+$('#checkBtn').addEventListener('click',check);
+$('#nextBtn').addEventListener('click',next);
+$('#speakBtn').addEventListener('click',()=>{if(!soundOn){soundOn=true;$('#muteBtn').textContent='🔊'}speak(cur().text)});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  if(!$('#modal').hidden||$('#quiz').hidden)return;
+  e.preventDefault();
+  S.locked?next():check();
+});
+
+function completePart(){
+  const p=S.part;S.badges[p]=true;renderSteps();
+  const master=p===2&&total()===30,pass=p===2&&total()>=PASS;
+  let html=`<div class="badge">${badgeSVG(p,'m'+p,190)}</div>`;
+  if(pass)html+=`<div class="badge">${badgeSVG(4,'mp',190)}</div>`;
+  if(master)html+=`<div class="badge">${badgeSVG(3,'mm',190)}</div>`;
+  const sc=S.scores[p];
+  const msg=sc===10?'Flawless! Every answer was correct.':sc>=8?'Great work!':sc>=5?'Nice effort. Keep practicing.':'You finished it. Review the hints and try again later.';
+  $('#mTitle').textContent=master?'🏆 MASTER BADGE UNLOCKED!':pass?'🎓 You passed the challenge!':`🎉 Part ${p+1} complete!`;
+  $('#mText').textContent=`You scored ${sc} out of 10 in Part ${p+1}. ${msg}`
+    +(p===2?(master?' You completed all 3 parts with no errors: 30 / 30!':pass?` Your total is ${total()} / 30, which passes the challenge (${PASS} needed).`:` Your total is ${total()} / 30. You need ${PASS} / 30 to pass. You can try again with new questions.`):'');
+  $('#mBadges').innerHTML=html;
+  const btn=$('#mBtn');btn.textContent=p<2?`Start Part ${p+2} ▶`:'See my results ▶';
+  btn.onclick=()=>{$('#modal').hidden=true;sfx.click();p<2?startPart(p+1):showResults()};
+  $('#modal').hidden=false;btn.focus();
+  master?sfx.master():sfx.badge();
+}
+
+function showResults(){
+  const tot=total(),master=tot===30,pass=tot>=PASS;
+  show('results');
+  $('#who').innerHTML=`<span>Name: <b>${S.name.replace(/[<>&]/g,'')}</b></span><span>Grade: <b>10</b></span><span>Section: <b>${S.section}</b></span><span>Date: <b>${new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'})}</b></span>`;
+  $('#banner').textContent=master?'🏆 Perfect score! You are a Force Master!':pass?'🎓 You passed the challenge! Great work!':`💪 Not passed yet. You need ${PASS} / 30 to pass. Try again with new questions!`;
+  $('#scoreTable').innerHTML=`<tr><th>Part</th><th>Score</th></tr>
+  <tr><td>Part 1 · Applied, friction, weight, normal</td><td>${S.scores[0]} / 10</td></tr>
+  <tr><td>Part 2 · Net force (x‑axis)</td><td>${S.scores[1]} / 10</td></tr>
+  <tr><td>Part 3 · Net force (y‑axis)</td><td>${S.scores[2]} / 10</td></tr>
+  <tr class="tot"><td>Total</td><td>${tot} / 30</td></tr>
+  <tr><td>Result (passing score: ${PASS} / 30)</td><td style="color:${pass?'#0b6b4a':'#c8102e'}">${pass?'PASSED ✔':'NOT YET PASSED'}</td></tr>`;
+  let h='';
+  [0,1,2].forEach(i=>h+=`<div class="badge">${badgeSVG(i,'r'+i,150)}<br><button type="button" data-dl="${i}">⬇ Save PNG</button></div>`);
+  h+=pass?`<div class="badge">${badgeSVG(4,'r4',150)}<br><button type="button" data-dl="4">⬇ Save PNG</button></div>`
+          :`<div class="badge"><div class="locked"><b>🔒</b>Challenge Passed badge<br>Locked: score ${PASS} / 30 or higher</div></div>`;
+  h+=master?`<div class="badge">${badgeSVG(3,'r3',150)}<br><button type="button" data-dl="3">⬇ Save PNG</button></div>`
+           :`<div class="badge"><div class="locked"><b>🔒</b>Master badge<br>Locked: get 30 / 30 with no errors</div></div>`;
+  $('#badgeRow').innerHTML=h;
+  $('#badgeRow').querySelectorAll('[data-dl]').forEach(b=>b.addEventListener('click',()=>{sfx.click();downloadBadge(+b.dataset.dl)}));
+  master?sfx.master():sfx.badge();
+}
+$('#printBtn').addEventListener('click',()=>{sfx.click();window.print()});
+$('#againBtn').addEventListener('click',()=>{sfx.click();startAll()});
+$('#quitBtn').addEventListener('click',()=>{
+  if(confirm('Quit and return to the start screen? Your progress will be lost.')){
+    if(window.speechSynthesis)speechSynthesis.cancel();show('welcome')
+  }
+});
+})();
+</script>
+</body>
+</html>
